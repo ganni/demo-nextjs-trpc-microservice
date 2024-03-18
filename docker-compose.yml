@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  api:
+    # image: 'node:20'
+    # container_name: "nodew"
+    build:
+      context: ./api
+    ports:
+      - '8080:3005'
+    # volumes:
+    #   - ./:/app
+    # working_dir: '/app'
+    # command: 'npm start'
+    environment:
+      PORT: '3005'
+      CORS_CLIENT_ORIGIN: 'http://webapp:3000'
+  #   depends_on:
+  #     - "db"
+  # ## docker run --rm -it -v $(PWD): -w /app -p 8080:3000 --name nodew
+
+  db:
+    image: 'postgres:16'
+    # container_name: 'db_pg'
+    ports:
+      - '54320:5432'
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 'testpass'
+
+  webapp:
+    depends_on:
+      - api
+      - db
+    build:
+      dockerfile: webapp/Dockerfile
+      context: .
+      args:
+        - POSTGRES_PRISMA_URL=postgresql://postgres:testpass@db:5432/mydb?schema=public
+        - API_BASE_URL=$CLIENT_API_BASE_URL
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://postgres:testpass@db:5432/mydb?schema=public
+      - API_TRPC_URL=http://api:3005/trpc
+    ports:
+      - '8082:3000'
+      # - $WEBAPP_LOCAL_PORT:$WEBAPP_DOCKER_PORT
+
+volumes:
+  db_pg_data:
