@@ -4,22 +4,43 @@ import { initTRPC } from '@trpc/server';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { z } from 'zod';
 
-import { data as dataJson } from './data';
 const t = initTRPC.create();
+const PROXY_API_URL = process.env.PROXY_API_URL;
+
+const rowSchema = z.object({
+  client_id: z.string(),
+  date_testing: z.string(),
+  date_birthdate: z.string(),
+  gender: z.number(),
+  ethnicity: z.number(),
+  creatine: z.number(),
+  chloride: z.number(),
+  fasting_glucose: z.number(),
+  potassium: z.number(),
+  sodium: z.number(),
+  total_calcium: z.number(),
+  total_protein: z.number(),
+  creatine_unit: z.string(),
+  chloride_unit: z.string(),
+  fasting_glucose_unit: z.string(),
+  potassium_unit: z.string(),
+  sodium_unit: z.string(),
+  total_calcium_unit: z.string(),
+  total_protein_unit: z.string(),
+});
 
 const appRouter = t.router({
-  fetchRecords: t.procedure.input(z.number()).query(async ({ input }) => {
-    return dataJson;
-    // return await Promise.all(
-    //   Array(input)
-    //     .fill(0)
-    //     .map(() =>
-    //       // fetch('https://mockapi-furw4tenlq-ez.a.run.app/data').then(
-    //       //   (response) => response.json()
-    //       // )
-    //     )
-    // );
-  }),
+  fetchRecords: t.procedure
+    .input(z.number())
+    .output(z.array(z.array(rowSchema)))
+    .query(async ({ input }) => {
+      if (!PROXY_API_URL) return [];
+      return await Promise.all(
+        Array(input)
+          .fill(0)
+          .map(() => fetch(PROXY_API_URL).then((response) => response.json()))
+      );
+    }),
 });
 
 const app = express();

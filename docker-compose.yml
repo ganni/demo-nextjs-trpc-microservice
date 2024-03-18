@@ -13,10 +13,8 @@ services:
     # command: 'npm start'
     environment:
       PORT: '3005'
+      PROXY_API_URL: 'https://mockapi-furw4tenlq-ez.a.run.app/data'
       CORS_CLIENT_ORIGIN: 'http://webapp:3000'
-  #   depends_on:
-  #     - "db"
-  # ## docker run --rm -it -v $(PWD): -w /app -p 8080:3000 --name nodew
 
   db:
     image: 'postgres:16'
