@@ -27,7 +27,9 @@ app.use('/trpc', createExpressMiddleware({ router: appRouter }));
 app.use(
   cors({ origin: process.env.CORS_CLIENT_ORIGIN ?? 'http://localhost:3000' })
 );
-
-app.listen(process.env.PORT ?? 3005);
+const PORT = process.env.PORT ?? 3005;
+app.listen(PORT, () => {
+  console.log('API started and listening on:', PORT);
+});
 
 export type ExtApiRouter = typeof appRouter;
