@@ -2,11 +2,22 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { extApiClient } from '@/utils/ext-api';
 
+/** default count of users' data to fetch */
+const FETCH_USERS_COUNT = 10;
+/** default pagination size for fetching `testRecord` rows */
+const PAGINATION_PAGE_SIZE = 1000;
+
 const idSchema = z.object({ id: z.string() });
 export const testRecordRouter = createTRPCRouter({
   //get all records
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.testRecord.findMany();
+    return ctx.prisma.testRecord.findMany({
+      skip: 0,
+      take: PAGINATION_PAGE_SIZE, // limit to top 1000
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
   }),
 
   //get record by id
@@ -18,7 +29,7 @@ export const testRecordRouter = createTRPCRouter({
 
   // fetch and save test records
   addData: publicProcedure
-    .input(z.number().default(1))
+    .input(z.number().default(FETCH_USERS_COUNT))
     .mutation(async ({ input, ctx }) => {
       const apiRes = await extApiClient.fetchRecords.query(input);
       apiRes.map(async (patientRecords) => {

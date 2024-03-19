@@ -1,16 +1,10 @@
 version: '3.8'
 services:
   api:
-    # image: 'node:20'
-    # container_name: "nodew"
     build:
       context: ./api
     ports:
       - '8080:3005'
-    # volumes:
-    #   - ./:/app
-    # working_dir: '/app'
-    # command: 'npm start'
     environment:
       PORT: '3005'
       PROXY_API_URL: 'https://mockapi-furw4tenlq-ez.a.run.app/data'
@@ -18,7 +12,6 @@ services:
 
   db:
     image: 'postgres:16'
-    # container_name: 'db_pg'
     ports:
       - '54320:5432'
     volumes:
@@ -33,9 +26,6 @@ services:
     build:
       dockerfile: webapp/Dockerfile
       context: .
-      args:
-        - POSTGRES_PRISMA_URL=postgresql://postgres:testpass@db:5432/mydb?schema=public
-        - API_BASE_URL=$CLIENT_API_BASE_URL
     environment:
       - POSTGRES_PRISMA_URL=postgresql://postgres:testpass@db:5432/mydb?schema=public
       - API_TRPC_URL=http://api:3005/trpc
