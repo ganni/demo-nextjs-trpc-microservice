@@ -38,7 +38,7 @@ const TestRecord: React.FC = () => {
           </button>
           <button
             className="rounded bg-green-500 px-4 py-1 text-white hover:bg-green-600 mx-3"
-            onClick={() => addData.mutate(2)}
+            onClick={() => addData.mutate()}
           >
             Fetch & Save New Data ({addData.status})
           </button>
